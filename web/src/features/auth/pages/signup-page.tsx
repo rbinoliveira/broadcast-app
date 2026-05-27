@@ -1,13 +1,26 @@
 import { Link } from '@mui/material'
-import { Link as RouterLink } from 'react-router-dom'
+import { useState } from 'react'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import { AuthPageShell } from '../components/auth-page-shell'
 import { SignupForm } from '../components/signup-form'
 import type { SignupFormValues } from '../schemas/signup.schema'
+import { signUpWithEmail } from '../services/auth.service'
+import { getAuthErrorMessage } from '../services/auth-errors'
 
 export function SignupPage() {
-  function handleEmailSignUp(values: SignupFormValues) {
-    console.log(values)
+  const navigate = useNavigate()
+  const [error, setError] = useState<string>()
+
+  async function handleEmailSignUp(values: SignupFormValues) {
+    setError(undefined)
+
+    try {
+      await signUpWithEmail(values)
+      navigate('/')
+    } catch (err) {
+      setError(getAuthErrorMessage(err))
+    }
   }
 
   function handleGoogleSignUp() {
@@ -27,6 +40,7 @@ export function SignupPage() {
       title="Cadastrar"
     >
       <SignupForm
+        error={error}
         onGoogleSignUp={handleGoogleSignUp}
         onSubmit={handleEmailSignUp}
       />

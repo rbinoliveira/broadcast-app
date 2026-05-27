@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Divider, Link, Stack } from '@mui/material'
+import { Alert, Button, Divider, Link, Stack } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import { Link as RouterLink } from 'react-router-dom'
 
@@ -9,12 +9,17 @@ import { type LoginFormValues, loginSchema } from '../schemas/login.schema'
 import { GoogleIcon } from './google-icon'
 
 type LoginFormProps = {
+  error?: string
   onGoogleSignIn?: () => Promise<void> | void
   onSubmit?: (values: LoginFormValues) => Promise<void> | void
 }
 
-export function LoginForm({ onGoogleSignIn, onSubmit }: LoginFormProps) {
-  const { control, handleSubmit } = useForm<LoginFormValues>({
+export function LoginForm({ error, onGoogleSignIn, onSubmit }: LoginFormProps) {
+  const {
+    control,
+    formState: { isSubmitting },
+    handleSubmit,
+  } = useForm<LoginFormValues>({
     defaultValues: {
       email: '',
       password: '',
@@ -23,7 +28,7 @@ export function LoginForm({ onGoogleSignIn, onSubmit }: LoginFormProps) {
   })
 
   function handleLogin(values: LoginFormValues) {
-    onSubmit?.(values)
+    return onSubmit?.(values)
   }
 
   function handleGoogleSignIn() {
@@ -54,8 +59,15 @@ export function LoginForm({ onGoogleSignIn, onSubmit }: LoginFormProps) {
           type="password"
         />
 
-        <Button fullWidth type="submit" variant="contained">
-          Entrar
+        {error && <Alert severity="error">{error}</Alert>}
+
+        <Button
+          disabled={isSubmitting}
+          fullWidth
+          type="submit"
+          variant="contained"
+        >
+          {isSubmitting ? 'Entrando...' : 'Entrar'}
         </Button>
 
         <Link

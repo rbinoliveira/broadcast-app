@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Divider, Stack } from '@mui/material'
+import { Alert, Button, Divider, Stack } from '@mui/material'
 import { useForm } from 'react-hook-form'
 
 import { InputText } from '@/shared/components/input-text'
@@ -8,12 +8,21 @@ import { type SignupFormValues, signupSchema } from '../schemas/signup.schema'
 import { GoogleIcon } from './google-icon'
 
 type SignupFormProps = {
+  error?: string
   onGoogleSignUp?: () => Promise<void> | void
   onSubmit?: (values: SignupFormValues) => Promise<void> | void
 }
 
-export function SignupForm({ onGoogleSignUp, onSubmit }: SignupFormProps) {
-  const { control, handleSubmit } = useForm<SignupFormValues>({
+export function SignupForm({
+  error,
+  onGoogleSignUp,
+  onSubmit,
+}: SignupFormProps) {
+  const {
+    control,
+    formState: { isSubmitting },
+    handleSubmit,
+  } = useForm<SignupFormValues>({
     defaultValues: {
       name: '',
       email: '',
@@ -23,7 +32,7 @@ export function SignupForm({ onGoogleSignUp, onSubmit }: SignupFormProps) {
   })
 
   function handleSignup(values: SignupFormValues) {
-    onSubmit?.(values)
+    return onSubmit?.(values)
   }
 
   function handleGoogleSignUp() {
@@ -64,8 +73,15 @@ export function SignupForm({ onGoogleSignUp, onSubmit }: SignupFormProps) {
           type="password"
         />
 
-        <Button fullWidth type="submit" variant="contained">
-          Cadastrar
+        {error && <Alert severity="error">{error}</Alert>}
+
+        <Button
+          disabled={isSubmitting}
+          fullWidth
+          type="submit"
+          variant="contained"
+        >
+          {isSubmitting ? 'Cadastrando...' : 'Cadastrar'}
         </Button>
       </Stack>
 

@@ -1,13 +1,26 @@
 import { Link } from '@mui/material'
-import { Link as RouterLink } from 'react-router-dom'
+import { useState } from 'react'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import { AuthPageShell } from '../components/auth-page-shell'
 import { LoginForm } from '../components/login-form'
 import type { LoginFormValues } from '../schemas/login.schema'
+import { signInWithEmail } from '../services/auth.service'
+import { getAuthErrorMessage } from '../services/auth-errors'
 
 export function LoginPage() {
-  function handleEmailSignIn(values: LoginFormValues) {
-    console.log(values)
+  const navigate = useNavigate()
+  const [error, setError] = useState<string>()
+
+  async function handleEmailSignIn(values: LoginFormValues) {
+    setError(undefined)
+
+    try {
+      await signInWithEmail(values)
+      navigate('/')
+    } catch (err) {
+      setError(getAuthErrorMessage(err))
+    }
   }
 
   function handleGoogleSignIn() {
@@ -27,6 +40,7 @@ export function LoginPage() {
       title="Entrar"
     >
       <LoginForm
+        error={error}
         onGoogleSignIn={handleGoogleSignIn}
         onSubmit={handleEmailSignIn}
       />

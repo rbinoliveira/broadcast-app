@@ -1,13 +1,27 @@
 import { Link } from '@mui/material'
+import { useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 
 import { AuthPageShell } from '../components/auth-page-shell'
 import { ForgotPasswordForm } from '../components/forgot-password-form'
 import type { ForgotPasswordFormValues } from '../schemas/forgot-password.schema'
+import { sendPasswordReset } from '../services/auth.service'
+import { getAuthErrorMessage } from '../services/auth-errors'
 
 export function ForgotPasswordPage() {
-  function handleRecoverPassword(values: ForgotPasswordFormValues) {
-    console.log(values)
+  const [error, setError] = useState<string>()
+  const [success, setSuccess] = useState(false)
+
+  async function handleRecoverPassword(values: ForgotPasswordFormValues) {
+    setError(undefined)
+    setSuccess(false)
+
+    try {
+      await sendPasswordReset(values.email)
+      setSuccess(true)
+    } catch (err) {
+      setError(getAuthErrorMessage(err))
+    }
   }
 
   return (
@@ -22,7 +36,11 @@ export function ForgotPasswordPage() {
       }
       title="Recuperar senha"
     >
-      <ForgotPasswordForm onSubmit={handleRecoverPassword} />
+      <ForgotPasswordForm
+        error={error}
+        success={success}
+        onSubmit={handleRecoverPassword}
+      />
     </AuthPageShell>
   )
 }

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Stack } from '@mui/material'
+import { Alert, Button, Stack } from '@mui/material'
 import { useForm } from 'react-hook-form'
 
 import { InputText } from '@/shared/components/input-text'
@@ -10,11 +10,21 @@ import {
 } from '../schemas/forgot-password.schema'
 
 type ForgotPasswordFormProps = {
+  error?: string
+  success?: boolean
   onSubmit?: (values: ForgotPasswordFormValues) => Promise<void> | void
 }
 
-export function ForgotPasswordForm({ onSubmit }: ForgotPasswordFormProps) {
-  const { control, handleSubmit } = useForm<ForgotPasswordFormValues>({
+export function ForgotPasswordForm({
+  error,
+  success,
+  onSubmit,
+}: ForgotPasswordFormProps) {
+  const {
+    control,
+    formState: { isSubmitting },
+    handleSubmit,
+  } = useForm<ForgotPasswordFormValues>({
     defaultValues: {
       email: '',
     },
@@ -22,7 +32,7 @@ export function ForgotPasswordForm({ onSubmit }: ForgotPasswordFormProps) {
   })
 
   function handleRecoverPassword(values: ForgotPasswordFormValues) {
-    onSubmit?.(values)
+    return onSubmit?.(values)
   }
 
   return (
@@ -42,8 +52,20 @@ export function ForgotPasswordForm({ onSubmit }: ForgotPasswordFormProps) {
         type="email"
       />
 
-      <Button fullWidth type="submit" variant="contained">
-        Enviar link de recuperacao
+      {success && (
+        <Alert severity="success">
+          Enviamos um link de recuperacao para o seu e-mail.
+        </Alert>
+      )}
+      {error && <Alert severity="error">{error}</Alert>}
+
+      <Button
+        disabled={isSubmitting}
+        fullWidth
+        type="submit"
+        variant="contained"
+      >
+        {isSubmitting ? 'Enviando...' : 'Enviar link de recuperacao'}
       </Button>
     </Stack>
   )
