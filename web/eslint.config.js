@@ -19,7 +19,7 @@ export default defineConfig([
       tseslint.configs.recommended,
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
-      prettier, 
+      prettier,
     ],
     languageOptions: {
       parser: tseslint.parser,
@@ -60,7 +60,7 @@ export default defineConfig([
           bracketSpacing: true,
           bracketSameLine: false,
           plugins: ['prettier-plugin-tailwindcss'],
-          tailwindStylesheet: './src/index.css',
+          tailwindStylesheet: './src/shared/styles/index.css',
         },
       ],
     },
