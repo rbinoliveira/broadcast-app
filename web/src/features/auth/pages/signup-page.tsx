@@ -5,7 +5,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { AuthPageShell } from '../components/auth-page-shell'
 import { SignupForm } from '../components/signup-form'
 import type { SignupFormValues } from '../schemas/signup.schema'
-import { signUpWithEmail } from '../services/auth.service'
+import { signInWithGoogle, signUpWithEmail } from '../services/auth.service'
 import { getAuthErrorMessage } from '../services/auth-errors'
 
 export function SignupPage() {
@@ -23,8 +23,15 @@ export function SignupPage() {
     }
   }
 
-  function handleGoogleSignUp() {
-    console.log('google sign up')
+  async function handleGoogleSignUp() {
+    setError(undefined)
+
+    try {
+      await signInWithGoogle()
+      navigate('/')
+    } catch (err) {
+      setError(getAuthErrorMessage(err))
+    }
   }
 
   return (
