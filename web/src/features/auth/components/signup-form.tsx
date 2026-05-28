@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Alert, Button, Divider, Stack } from '@mui/material'
+import { Button, CircularProgress, Divider, Stack } from '@mui/material'
 import { useForm } from 'react-hook-form'
 
 import { InputText } from '@/shared/components/input-text'
@@ -8,16 +8,11 @@ import { type SignupFormValues, signupSchema } from '../schemas/signup.schema'
 import { GoogleIcon } from './google-icon'
 
 type SignupFormProps = {
-  error?: string
   onGoogleSignUp?: () => Promise<void> | void
   onSubmit?: (values: SignupFormValues) => Promise<void> | void
 }
 
-export function SignupForm({
-  error,
-  onGoogleSignUp,
-  onSubmit,
-}: SignupFormProps) {
+export function SignupForm({ onGoogleSignUp, onSubmit }: SignupFormProps) {
   const {
     control,
     formState: { isSubmitting },
@@ -41,7 +36,12 @@ export function SignupForm({
 
   return (
     <>
-      <Stack component="form" spacing={2} onSubmit={handleSubmit(handleSignup)}>
+      <Stack
+        component="form"
+        noValidate
+        spacing={2}
+        onSubmit={handleSubmit(handleSignup)}
+      >
         <InputText
           autoComplete="name"
           autoFocus
@@ -73,15 +73,20 @@ export function SignupForm({
           type="password"
         />
 
-        {error && <Alert severity="error">{error}</Alert>}
-
         <Button
           disabled={isSubmitting}
           fullWidth
           type="submit"
           variant="contained"
         >
-          {isSubmitting ? 'Cadastrando...' : 'Cadastrar'}
+          {isSubmitting ? (
+            <>
+              <CircularProgress color="inherit" size={18} sx={{ mr: 1 }} />
+              Cadastrando...
+            </>
+          ) : (
+            'Cadastrar'
+          )}
         </Button>
       </Stack>
 

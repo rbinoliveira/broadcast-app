@@ -1,4 +1,5 @@
 import { CssBaseline } from '@mui/material'
+import { SnackbarProvider } from 'notistack'
 import type { ReactNode } from 'react'
 
 import { AuthProvider } from '@/features/auth/context/auth-provider'
@@ -8,7 +9,13 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <AppTheme>
       <CssBaseline enableColorScheme />
-      <AuthProvider>{children}</AuthProvider>
+      <SnackbarProvider
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        autoHideDuration={4000}
+        maxSnack={3}
+      >
+        <AuthProvider>{children}</AuthProvider>
+      </SnackbarProvider>
     </AppTheme>
   )
 }

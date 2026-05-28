@@ -1,5 +1,5 @@
 import { Link } from '@mui/material'
-import { useState } from 'react'
+import { enqueueSnackbar } from 'notistack'
 import { Link as RouterLink } from 'react-router-dom'
 
 import { AuthPageShell } from '../components/auth-page-shell'
@@ -9,18 +9,14 @@ import { sendPasswordReset } from '../services/auth.service'
 import { getAuthErrorMessage } from '../services/auth-errors'
 
 export function ForgotPasswordPage() {
-  const [error, setError] = useState<string>()
-  const [success, setSuccess] = useState(false)
-
   async function handleRecoverPassword(values: ForgotPasswordFormValues) {
-    setError(undefined)
-    setSuccess(false)
-
     try {
       await sendPasswordReset(values.email)
-      setSuccess(true)
+      enqueueSnackbar('Enviamos um link de recuperação para o seu e-mail.', {
+        variant: 'success',
+      })
     } catch (err) {
-      setError(getAuthErrorMessage(err))
+      enqueueSnackbar(getAuthErrorMessage(err), { variant: 'error' })
     }
   }
 
@@ -36,11 +32,7 @@ export function ForgotPasswordPage() {
       }
       title="Recuperar senha"
     >
-      <ForgotPasswordForm
-        error={error}
-        success={success}
-        onSubmit={handleRecoverPassword}
-      />
+      <ForgotPasswordForm onSubmit={handleRecoverPassword} />
     </AuthPageShell>
   )
 }

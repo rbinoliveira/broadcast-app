@@ -1,33 +1,59 @@
-import { Button, Stack, Typography } from '@mui/material'
+import { Stack } from '@mui/material'
 
-import { useAuth } from '@/features/auth/context/auth-context'
-import { signOutUser } from '@/features/auth/services/auth.service'
+import { ConnectionFormDialog } from '@/features/connections/components/connection-form-dialog'
+import { ConnectionsHeader } from '@/features/connections/components/connections-header'
+import { ConnectionsList } from '@/features/connections/components/connections-list'
+import { useConnectionFormDialog } from '@/features/connections/hooks/use-connection-form-dialog.hook'
+import { useConnections } from '@/features/connections/hooks/use-connections.hook'
+import { PageHeader } from '@/shared/components/page-header'
+import { useSearchFilter } from '@/shared/hooks/use-search-filter'
+
+import { AppShell } from '../components/app-shell'
 
 export function HomePage() {
-  const { user } = useAuth()
-
-  async function handleLogout() {
-    await signOutUser()
-  }
+  const {
+    connections,
+    loading,
+    createConnection,
+    updateConnection,
+    removeConnection,
+  } = useConnections()
+  const { search, setSearch, filteredItems } = useSearchFilter({
+    items: connections,
+    getSearchText: (connection) => connection.name,
+  })
+  const connectionDialog = useConnectionFormDialog({
+    createConnection,
+    updateConnection,
+  })
 
   return (
-    <Stack
-      spacing={3}
-      sx={{
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-      }}
-    >
-      <Typography variant="h5">Voce esta logado</Typography>
+    <AppShell>
+      <Stack spacing={3}>
+        <PageHeader
+          breadcrumbs={['Broadcast', 'Conexões']}
+          search={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Buscar por nome"
+        />
 
-      {user?.email && (
-        <Typography color="text.secondary">{user.email}</Typography>
-      )}
+        <ConnectionsHeader />
 
-      <Button onClick={handleLogout} variant="contained">
-        Sair
-      </Button>
-    </Stack>
+        <ConnectionsList
+          connections={filteredItems}
+          loading={loading}
+          onNew={connectionDialog.handleCreateDialogOpen}
+          onEdit={connectionDialog.handleEditDialogOpen}
+          onDelete={removeConnection}
+        />
+      </Stack>
+
+      <ConnectionFormDialog
+        open={connectionDialog.open}
+        connection={connectionDialog.connection}
+        onClose={connectionDialog.handleDialogClose}
+        onSubmit={connectionDialog.handleConnectionSubmit}
+      />
+    </AppShell>
   )
 }

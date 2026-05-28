@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Alert, Button, Divider, Link, Stack } from '@mui/material'
+import { Button, CircularProgress, Divider, Link, Stack } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import { Link as RouterLink } from 'react-router-dom'
 
@@ -9,12 +9,11 @@ import { type LoginFormValues, loginSchema } from '../schemas/login.schema'
 import { GoogleIcon } from './google-icon'
 
 type LoginFormProps = {
-  error?: string
   onGoogleSignIn?: () => Promise<void> | void
   onSubmit?: (values: LoginFormValues) => Promise<void> | void
 }
 
-export function LoginForm({ error, onGoogleSignIn, onSubmit }: LoginFormProps) {
+export function LoginForm({ onGoogleSignIn, onSubmit }: LoginFormProps) {
   const {
     control,
     formState: { isSubmitting },
@@ -37,7 +36,12 @@ export function LoginForm({ error, onGoogleSignIn, onSubmit }: LoginFormProps) {
 
   return (
     <>
-      <Stack component="form" spacing={2} onSubmit={handleSubmit(handleLogin)}>
+      <Stack
+        component="form"
+        noValidate
+        spacing={2}
+        onSubmit={handleSubmit(handleLogin)}
+      >
         <InputText
           autoComplete="email"
           autoFocus
@@ -59,15 +63,20 @@ export function LoginForm({ error, onGoogleSignIn, onSubmit }: LoginFormProps) {
           type="password"
         />
 
-        {error && <Alert severity="error">{error}</Alert>}
-
         <Button
           disabled={isSubmitting}
           fullWidth
           type="submit"
           variant="contained"
         >
-          {isSubmitting ? 'Entrando...' : 'Entrar'}
+          {isSubmitting ? (
+            <>
+              <CircularProgress color="inherit" size={18} sx={{ mr: 1 }} />
+              Entrando...
+            </>
+          ) : (
+            'Entrar'
+          )}
         </Button>
 
         <Link
