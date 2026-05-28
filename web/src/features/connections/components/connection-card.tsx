@@ -11,24 +11,43 @@ import {
   Typography,
 } from '@mui/material'
 import { alpha } from '@mui/material/styles'
+import type { KeyboardEvent, MouseEvent } from 'react'
 
 import type { ConnectionRow } from '../types/connection.type'
 
 type ConnectionCardProps = {
   connection: ConnectionRow
-  onEdit: (connection: ConnectionRow) => void
   onDelete: (connectionId: string) => void
+  onEdit: (connection: ConnectionRow) => void
+  onOpen: (connectionId: string) => void
 }
 
 export function ConnectionCard({
   connection,
-  onEdit,
   onDelete,
+  onEdit,
+  onOpen,
 }: ConnectionCardProps) {
+  function handleActionClick(event: MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation()
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      onOpen(connection.id)
+    }
+  }
+
   return (
     <Card
+      onClick={() => onOpen(connection.id)}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
       variant="outlined"
       sx={(theme) => ({
+        cursor: 'pointer',
         minHeight: 150,
         display: 'flex',
         flexDirection: 'column',
@@ -79,7 +98,10 @@ export function ConnectionCard({
           <Tooltip title="Editar">
             <IconButton
               aria-label={`Editar ${connection.name}`}
-              onClick={() => onEdit(connection)}
+              onClick={(event) => {
+                handleActionClick(event)
+                onEdit(connection)
+              }}
               size="small"
             >
               <EditOutlinedIcon fontSize="small" />
@@ -89,7 +111,10 @@ export function ConnectionCard({
             <IconButton
               aria-label={`Excluir ${connection.name}`}
               color="error"
-              onClick={() => onDelete(connection.id)}
+              onClick={(event) => {
+                handleActionClick(event)
+                onDelete(connection.id)
+              }}
               size="small"
             >
               <DeleteOutlineOutlinedIcon fontSize="small" />

@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 
+import { normalizeTextSearch } from '@/shared/utils/normalize-search'
+
 import { useDebouncedValue } from './use-debounced-value'
 
 type UseSearchFilterParams<TItem> = {
@@ -15,14 +17,14 @@ export function useSearchFilter<TItem>({
   const debouncedSearch = useDebouncedValue(search, 300)
 
   const filteredItems = useMemo(() => {
-    const term = debouncedSearch.trim().toLowerCase()
+    const term = normalizeTextSearch(debouncedSearch)
 
     if (!term) {
       return items
     }
 
     return items.filter((item) =>
-      getSearchText(item).toLowerCase().includes(term),
+      normalizeTextSearch(getSearchText(item)).includes(term),
     )
   }, [items, debouncedSearch, getSearchText])
 

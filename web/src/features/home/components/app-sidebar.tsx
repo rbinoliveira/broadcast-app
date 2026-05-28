@@ -14,7 +14,9 @@ import {
   Typography,
 } from '@mui/material'
 import type { MouseEvent } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 
+import { ActiveConnectionSelect } from '@/features/connections/components/active-connection-select'
 import { getDisplayName, getInitials } from '@/shared/utils/user-display'
 
 type AppSidebarProps = {
@@ -31,6 +33,10 @@ export function AppSidebar({
   onNavigate,
 }: AppSidebarProps) {
   const displayName = getDisplayName(name, email)
+  const { pathname } = useLocation()
+  const isConnectionsSelected = pathname === '/'
+  const isContactsSelected =
+    pathname === '/contacts' || pathname.includes('/contacts')
 
   return (
     <Box
@@ -57,17 +63,28 @@ export function AppSidebar({
         </Typography>
       </Box>
 
+      <ActiveConnectionSelect onChange={onNavigate} />
+
       <Divider sx={{ my: 1 }} />
 
       <List disablePadding sx={{ mt: 1 }}>
-        <ListItemButton selected sx={{ borderRadius: 1.5, minHeight: 40 }}>
+        <ListItemButton
+          component={NavLink}
+          onClick={onNavigate}
+          selected={isConnectionsSelected}
+          sx={{ borderRadius: 1.5, minHeight: 40 }}
+          to="/"
+        >
           <ListItemIcon sx={{ minWidth: 36 }}>
             <HubOutlinedIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText primary="Conexões" />
         </ListItemButton>
         <ListItemButton
+          component={NavLink}
+          selected={isContactsSelected}
           sx={{ borderRadius: 1.5, minHeight: 40 }}
+          to="/contacts"
           onClick={onNavigate}
         >
           <ListItemIcon sx={{ minWidth: 36 }}>

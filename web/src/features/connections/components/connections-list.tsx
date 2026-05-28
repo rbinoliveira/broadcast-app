@@ -19,17 +19,19 @@ const SKELETON_KEYS = ['s1', 's2', 's3']
 type ConnectionsListProps = {
   connections: ConnectionRow[]
   loading: boolean
-  onNew: () => void
-  onEdit: (connection: ConnectionRow) => void
   onDelete: (connectionId: string) => void
+  onEdit: (connection: ConnectionRow) => void
+  onNew: () => void
+  onOpen: (connectionId: string) => void
 }
 
 export function ConnectionsList({
   connections,
   loading,
-  onNew,
-  onEdit,
   onDelete,
+  onEdit,
+  onNew,
+  onOpen,
 }: ConnectionsListProps) {
   return (
     <Box sx={GRID_SX}>
@@ -43,8 +45,9 @@ export function ConnectionsList({
             <ConnectionCard
               key={connection.id}
               connection={connection}
-              onEdit={onEdit}
               onDelete={onDelete}
+              onEdit={onEdit}
+              onOpen={onOpen}
             />
           ))}
     </Box>
