@@ -10,7 +10,7 @@ import neostandard from 'neostandard'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', 'node_modules']),
+  globalIgnores(['dist', 'node_modules', 'cypress']),
   ...neostandard({ ts: true }),
   {
     files: ['**/*.{ts,tsx}'],

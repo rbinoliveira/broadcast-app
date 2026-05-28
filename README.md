@@ -1,73 +1,107 @@
-# React + TypeScript + Vite
+# Broadcast
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+App para organizar contatos por conexão e disparar mensagens — na hora ou agendadas. A ideia é simples: você cria uma conexão (ex.: um número/origem), cadastra os contatos dela e dispara mensagens para um ou vários de uma vez, com a opção de agendar para depois.
 
-Currently, two official plugins are available:
+Feito com React + Firebase, hospedado no Firebase Hosting.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+🔗 **Online:** https://broadcast-app-62350.web.app
 
-## React Compiler
+## Telas
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Login
+Entrar com e-mail/senha ou conta Google.
 
-## Expanding the ESLint configuration
+![Tela de login](.repo/image1.png)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Dashboard
+Um panorama rápido: conexões, contatos e mensagens (enviadas e agendadas).
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+![Dashboard](.repo/image2.png)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Conexões
+Cada conexão é um "espaço" próprio de contatos e mensagens.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+![Conexões](.repo/image3.png)
+
+### Mensagens
+Lista com status, busca pelo conteúdo e paginação. Dá pra enviar na hora ou agendar.
+
+![Mensagens](.repo/image4.png)
+
+## O que dá pra fazer
+
+- Login por e-mail/senha e Google
+- CRUD de conexões
+- CRUD de contatos, com busca por nome/telefone e paginação
+- Criar mensagens para vários contatos, enviar na hora ou agendar
+- Busca de mensagens pelo conteúdo + filtro por status (todas / enviadas / agendadas)
+- Disparo das mensagens agendadas roda sozinho via Cloud Function (cron de 1 em 1 minuto)
+
+## Stack
+
+- **Front:** React 19, TypeScript, Vite, MUI + Tailwind, React Router, React Hook Form + Zod
+- **Backend:** Firebase Auth, Cloud Firestore e Cloud Functions
+- **Testes:** Vitest (unitários) e Cypress (e2e)
+- **Deploy:** Firebase Hosting com CI/CD no GitHub Actions
+
+## Rodando localmente
+
+Precisa de Node 22+, pnpm e um projeto Firebase.
+
+```bash
+cd web
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Crie um `web/.env.local` com as credenciais do seu Firebase:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_STORAGE_BUCKET=...
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Suba o app (porta 5173):
+
+```bash
+pnpm dev
+```
+
+## Testes
+
+**Unitários** (Vitest):
+
+```bash
+cd web
+pnpm test
+```
+
+**End-to-end** (Cypress) — o app precisa estar rodando em outra aba (`pnpm dev`):
+
+```bash
+cd web
+pnpm test:e2e
+```
+
+O `test:e2e` já cria o usuário de teste no Firebase (ignora se já existir) e avisa caso o app não esteja no ar.
+
+## Deploy
+
+O hosting já está publicado. A cada push na `main`, o GitHub Actions roda os testes unitários e, se passarem, publica o hosting e as regras/índices do Firestore.
+
+Para publicar na mão:
+
+```bash
+cd web && pnpm build
+firebase deploy --only hosting,firestore
+```
+
+## Estrutura
+
+```
+web/        front-end (React + Vite)
+functions/  Cloud Functions (disparo de mensagens agendadas)
 ```
