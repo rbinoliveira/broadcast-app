@@ -10,8 +10,7 @@
     "preview": "vite preview",
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
