@@ -22,5 +22,7 @@ export function getAuthErrorMessage(error: unknown): string {
     return messages[error.code]
   }
 
+  console.error('auth error', error)
+
   return 'Ocorreu um erro inesperado. Tente novamente.'
 }

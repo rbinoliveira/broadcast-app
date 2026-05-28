@@ -51,7 +51,7 @@ export function CrudFormDialog({
         paper: {
           elevation: 0,
           className:
-            'overflow-hidden rounded-xl border border-divider bg-surface shadow-card dark:border-white/12 dark:bg-surface-raised dark:shadow-overlay',
+            'overflow-hidden rounded-xl border border-white/12 bg-surface shadow-overlay',
         },
       }}
     >
@@ -62,7 +62,7 @@ export function CrudFormDialog({
         >
           <div className="flex min-w-0 flex-row gap-3">
             {icon ? (
-              <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-lg border border-brand/25 bg-brand/10 text-brand dark:border-brand/30 dark:bg-brand/15">
+              <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-lg border border-brand/30 bg-brand/15 text-brand">
                 {icon}
               </div>
             ) : null}

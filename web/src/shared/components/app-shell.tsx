@@ -66,6 +66,7 @@ export function AppShell({ children }: AppShellProps) {
               <MenuRoundedIcon />
             </AppButton>
             <Typography
+              component="span"
               className="text-lg font-bold tracking-normal"
               variant="h6"
             >

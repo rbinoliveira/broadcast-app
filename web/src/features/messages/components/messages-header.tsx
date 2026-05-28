@@ -28,7 +28,7 @@ export function MessagesHeader({
 
   return (
     <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-      <Typography component="h2" variant="h4">
+      <Typography component="h1" variant="h4">
         Mensagens
       </Typography>
 

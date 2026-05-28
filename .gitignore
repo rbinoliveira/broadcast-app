@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .docs
+
+# Firebase
+.firebase

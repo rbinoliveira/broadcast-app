@@ -1,14 +1,17 @@
 import { enqueueSnackbar } from 'notistack'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useAuth } from '@/features/auth/hooks/use-auth.hook'
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
 
 import type { ContactRow } from '../../contacts/types/contact.type'
 import type { MessageFormValues } from '../schemas/message.schema'
 import {
   createMessage as createMessageService,
   deleteMessage as deleteMessageService,
+  type MessagePageCursor,
   type MessageStatusFilter,
+  normalizeMessageSearch,
   subscribeToMessages,
   updateMessage as updateMessageService,
 } from '../services/messages.service'
@@ -24,6 +27,17 @@ export function useMessages({ connectionId, contacts }: UseMessagesParams) {
   const [messages, setMessages] = useState<MessageRow[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState<MessageStatusFilter>('all')
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(0)
+  const [pageCursors, setPageCursors] = useState<MessagePageCursor[]>([null])
+  const [lastCursor, setLastCursor] = useState<MessagePageCursor>(null)
+  const [hasNextPage, setHasNextPage] = useState(false)
+  const debouncedSearch = useDebouncedValue(search, 300)
+
+  const normalizedSearch = useMemo(
+    () => normalizeMessageSearch(debouncedSearch),
+    [debouncedSearch],
+  )
 
   useEffect(() => {
     if (!user || !connectionId) {
@@ -33,11 +47,19 @@ export function useMessages({ connectionId, contacts }: UseMessagesParams) {
     const unsubscribe = subscribeToMessages(
       {
         connectionId,
+        cursor: pageCursors[page] ?? null,
         ownerId: user.uid,
+        search: normalizedSearch,
         status: statusFilter,
       },
-      (nextMessages) => {
+      ({
+        messages: nextMessages,
+        hasNextPage: nextHasNextPage,
+        lastCursor,
+      }) => {
         setMessages(nextMessages)
+        setHasNextPage(nextHasNextPage)
+        setLastCursor(lastCursor)
         setLoading(false)
       },
       (error) => {
@@ -50,15 +72,51 @@ export function useMessages({ connectionId, contacts }: UseMessagesParams) {
     )
 
     return unsubscribe
-  }, [connectionId, statusFilter, user])
+  }, [connectionId, normalizedSearch, page, pageCursors, statusFilter, user])
+
+  const resetPagination = useCallback(() => {
+    setPage(0)
+    setPageCursors([null])
+    setLastCursor(null)
+    setHasNextPage(false)
+  }, [])
 
   const handleStatusFilterChange = useCallback(
     (status: MessageStatusFilter) => {
       setLoading(true)
       setStatusFilter(status)
+      resetPagination()
     },
-    [],
+    [resetPagination],
   )
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setLoading(true)
+      setSearch(value)
+      resetPagination()
+    },
+    [resetPagination],
+  )
+
+  const handlePreviousPage = useCallback(() => {
+    setLoading(true)
+    setPage((currentPage) => Math.max(currentPage - 1, 0))
+  }, [])
+
+  const handleNextPage = useCallback(() => {
+    if (!hasNextPage || !lastCursor) {
+      return
+    }
+
+    setLoading(true)
+    setPageCursors((currentCursors) => {
+      const nextCursors = [...currentCursors]
+      nextCursors[page + 1] = lastCursor
+      return nextCursors
+    })
+    setPage((currentPage) => currentPage + 1)
+  }, [hasNextPage, lastCursor, page])
 
   const createMessage = useCallback(
     async (data: MessageFormValues) => {
@@ -111,10 +169,16 @@ export function useMessages({ connectionId, contacts }: UseMessagesParams) {
 
   return {
     createMessage,
+    handleNextPage,
+    handlePreviousPage,
+    handleSearchChange,
     handleStatusFilterChange,
+    hasNextPage,
     loading,
     messages,
+    page,
     removeMessage,
+    search,
     statusFilter,
     updateMessage,
   }

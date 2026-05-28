@@ -4,13 +4,17 @@ import {
   deleteDoc,
   doc,
   type DocumentData,
+  endAt,
   type FirestoreError,
+  limit,
   onSnapshot,
   orderBy,
   query,
   type QueryConstraint,
   type QueryDocumentSnapshot,
   serverTimestamp,
+  startAfter,
+  startAt,
   Timestamp,
   type Unsubscribe,
   updateDoc,
@@ -18,6 +22,7 @@ import {
 } from 'firebase/firestore'
 
 import { db } from '@/shared/lib/firebase'
+import { normalizeTextSearch } from '@/shared/utils/normalize-search'
 
 import type { ContactRow } from '../../contacts/types/contact.type'
 import type { MessageFormValues } from '../schemas/message.schema'
@@ -28,14 +33,24 @@ import type {
   MessageStatus,
 } from '../types/message.type'
 
+export const MESSAGES_PAGE_SIZE = 10
+
 const MESSAGES_COLLECTION = 'messages'
 
 export type MessageStatusFilter = MessageStatus | 'all'
 
+export type MessagePageCursor = QueryDocumentSnapshot<DocumentData> | null
+
 type SubscribeToMessagesParams = {
   connectionId: string
+  cursor: MessagePageCursor
   ownerId: string
+  search: string | null
   status: MessageStatusFilter
+}
+
+export function normalizeMessageSearch(rawSearch: string): string | null {
+  return normalizeTextSearch(rawSearch) || null
 }
 
 function getTimestampMillis(timestamp: MessageRecord['updatedAt']) {
@@ -73,8 +88,12 @@ function getMessageDates(data: MessageFormValues) {
 }
 
 export function subscribeToMessages(
-  { connectionId, ownerId, status }: SubscribeToMessagesParams,
-  onData: (messages: MessageRow[]) => void,
+  { connectionId, cursor, ownerId, search, status }: SubscribeToMessagesParams,
+  onData: (params: {
+    messages: MessageRow[]
+    hasNextPage: boolean
+    lastCursor: MessagePageCursor
+  }) => void,
   onError: (error: FirestoreError) => void,
 ): Unsubscribe {
   const handleSnapshot = (
@@ -86,11 +105,21 @@ export function subscribeToMessages(
           .filter((item) => {
             const data = item.data() as MessageRecord
 
-            return status === 'all' || data.status === status
+            if (status !== 'all' && data.status !== status) {
+              return false
+            }
+
+            return !search || data.normalizedContent?.startsWith(search)
           })
           .sort((first, second) => {
             const firstData = first.data() as MessageRecord
             const secondData = second.data() as MessageRecord
+
+            if (search) {
+              return firstData.normalizedContent.localeCompare(
+                secondData.normalizedContent,
+              )
+            }
 
             return (
               getTimestampMillis(secondData.updatedAt) -
@@ -99,12 +128,25 @@ export function subscribeToMessages(
           })
       : docs
 
-    onData(
-      preparedDocs.map((item) => ({
+    const cursorIndex = cursor
+      ? preparedDocs.findIndex((item) => item.id === cursor.id)
+      : -1
+    const startIndex = cursorIndex >= 0 ? cursorIndex + 1 : 0
+    const pageDocs = preparedDocs.slice(
+      startIndex,
+      startIndex + MESSAGES_PAGE_SIZE + 1,
+    )
+    const visibleDocs = pageDocs.slice(0, MESSAGES_PAGE_SIZE)
+    const lastVisibleDoc = visibleDocs.at(-1) ?? null
+
+    onData({
+      messages: visibleDocs.map((item) => ({
         id: item.id,
         ...(item.data() as MessageRecord),
       })),
-    )
+      hasNextPage: pageDocs.length > MESSAGES_PAGE_SIZE,
+      lastCursor: lastVisibleDoc,
+    })
   }
 
   const subscribeToFallbackQuery = () => {
@@ -130,10 +172,25 @@ export function subscribeToMessages(
     constraints.push(where('status', '==', status))
   }
 
+  if (search) {
+    constraints.push(
+      orderBy('normalizedContent'),
+      startAt(search),
+      endAt(`${search}`),
+    )
+  } else {
+    constraints.push(orderBy('updatedAt', 'desc'))
+  }
+
+  if (cursor) {
+    constraints.push(startAfter(cursor))
+  }
+
+  constraints.push(limit(MESSAGES_PAGE_SIZE + 1))
+
   const messagesQuery = query(
     collection(db, MESSAGES_COLLECTION),
     ...constraints,
-    orderBy('updatedAt', 'desc'),
   )
 
   let fallbackUnsubscribe: Unsubscribe | null = null
@@ -170,6 +227,7 @@ export async function createMessage(
     contactIds: data.contactIds,
     contacts: getSelectedContactSnapshots(contacts, data.contactIds),
     content: data.content,
+    normalizedContent: normalizeTextSearch(data.content),
     ownerId,
     ...dates,
     createdAt: serverTimestamp(),
@@ -188,6 +246,7 @@ export async function updateMessage(
     contactIds: data.contactIds,
     contacts: getSelectedContactSnapshots(contacts, data.contactIds),
     content: data.content,
+    normalizedContent: normalizeTextSearch(data.content),
     ...dates,
     updatedAt: serverTimestamp(),
   })

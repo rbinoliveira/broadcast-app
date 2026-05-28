@@ -13,6 +13,7 @@ export type MessageRecord = {
   contactIds: string[]
   contacts: MessageContactSnapshot[]
   content: string
+  normalizedContent: string
   createdAt: Timestamp | null
   ownerId: string
   scheduledAt: Timestamp | null

@@ -72,7 +72,7 @@ export function ConnectionCard({
           </Tooltip>
         </div>
 
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-brand/[0.22] bg-brand/10 text-brand dark:border-brand/[0.28] dark:bg-brand/[0.14]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-brand/30 bg-brand/15 text-brand">
           <HubOutlinedIcon fontSize="small" />
         </div>
 

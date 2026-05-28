@@ -39,12 +39,24 @@ export function AppSidebar({
   const isContactsSelected =
     pathname === '/contacts' || pathname.includes('/contacts')
   const isMessagesSelected = pathname === '/messages'
+  const navItemSx = {
+    color: 'text.secondary',
+    '& .MuiListItemIcon-root': {
+      color: 'inherit',
+    },
+    '&.Mui-selected': {
+      color: 'text.primary',
+    },
+    '&:hover': {
+      color: 'text.primary',
+    },
+  }
 
   return (
     <div className="flex h-full flex-col gap-4 px-3 py-6">
       <NavLink
         aria-label="Voltar para dashboard"
-        className="flex max-w-full min-w-0 items-center gap-2 rounded-lg no-underline outline-offset-4"
+        className="flex max-w-full min-w-0 items-center gap-2 rounded-lg text-foreground no-underline outline-offset-4"
         onClick={onNavigate}
         to="/"
       >
@@ -58,6 +70,7 @@ export function AppSidebar({
         />
         <Typography
           noWrap
+          component="span"
           className="min-w-0 text-lg font-bold tracking-normal"
           variant="h6"
         >
@@ -75,6 +88,7 @@ export function AppSidebar({
           onClick={onNavigate}
           selected={isDashboardSelected}
           className="min-h-10 min-w-0 rounded-xl"
+          sx={navItemSx}
           to="/"
         >
           <ListItemIcon className="min-w-9 shrink-0">
@@ -91,6 +105,7 @@ export function AppSidebar({
           onClick={onNavigate}
           selected={isConnectionsSelected}
           className="min-h-10 min-w-0 rounded-xl"
+          sx={navItemSx}
           to="/connections"
         >
           <ListItemIcon className="min-w-9 shrink-0">
@@ -106,6 +121,7 @@ export function AppSidebar({
           component={NavLink}
           selected={isContactsSelected}
           className="min-h-10 min-w-0 rounded-xl"
+          sx={navItemSx}
           to="/contacts"
           onClick={onNavigate}
         >
@@ -122,6 +138,7 @@ export function AppSidebar({
           component={NavLink}
           selected={isMessagesSelected}
           className="min-h-10 min-w-0 rounded-xl"
+          sx={navItemSx}
           to="/messages"
           onClick={onNavigate}
         >

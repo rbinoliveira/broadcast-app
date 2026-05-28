@@ -6,7 +6,7 @@ import {
 import { type ReactNode, useMemo } from 'react'
 
 import { componentCustomizations } from './customizations'
-import { colorSchemes, shadows, shape, typography } from './theme-primitives'
+import { palette, shadows, shape, typography } from './theme-primitives'
 
 type AppThemeProps = {
   children: ReactNode
@@ -25,15 +25,14 @@ export function AppTheme({
     }
 
     return createTheme({
-      colorSchemes,
       components: {
         ...componentCustomizations,
         ...themeComponents,
       },
       cssVariables: {
-        colorSchemeSelector: 'data-mui-color-scheme',
         cssVarPrefix: 'template',
       },
+      palette,
       shadows,
       shape,
       typography,

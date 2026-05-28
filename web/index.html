@@ -8,8 +8,9 @@
       content="Broadcast é uma aplicação para gerenciar conexões, contatos e mensagens agendadas em um só lugar."
     />
     <meta name="application-name" content="Broadcast" />
-    <meta name="theme-color" content="#0054ff" />
+    <meta name="theme-color" content="#03060d" />
     <meta name="apple-mobile-web-app-title" content="Broadcast" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta property="og:type" content="website" />
@@ -27,12 +28,51 @@
       content="Gerencie conexões, contatos e mensagens agendadas com o Broadcast."
     />
     <meta name="twitter:image" content="/app-icon.png" />
-    <link rel="icon" type="image/png" href="/app-icon.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>Broadcast</title>
+    <style>
+      body {
+        margin: 0;
+        background: #03060d;
+        color: #ffffff;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      .initial-shell {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #03060d;
+      }
+
+      .initial-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .initial-brand img {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="initial-shell">
+        <div class="initial-brand">
+          <img src="/logo.png" alt="" width="40" height="40" />
+          <span>Broadcast</span>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/app/main.tsx"></script>
   </body>
 </html>

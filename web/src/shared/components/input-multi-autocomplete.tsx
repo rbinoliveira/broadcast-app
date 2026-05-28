@@ -24,7 +24,7 @@ function AutocompletePaper({ className, ...props }: PaperProps) {
       {...props}
       elevation={8}
       className={[
-        'mt-1.5 overflow-hidden border border-divider bg-surface dark:border-white/12 dark:bg-surface-raised',
+        'mt-1.5 overflow-hidden border border-white/12 bg-surface',
         className,
       ]
         .filter(Boolean)

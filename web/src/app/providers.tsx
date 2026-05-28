@@ -11,7 +11,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <StyledEngineProvider injectFirst>
       <AppTheme>
-        <CssBaseline enableColorScheme />
+        <CssBaseline />
         <SnackbarProvider
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           autoHideDuration={4000}

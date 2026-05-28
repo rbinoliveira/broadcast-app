@@ -22,10 +22,16 @@ export function MessagesPage() {
   })
   const {
     createMessage,
+    handleNextPage,
+    handlePreviousPage,
+    handleSearchChange,
     handleStatusFilterChange,
+    hasNextPage,
     loading,
     messages,
+    page,
     removeMessage,
+    search,
     statusFilter,
     updateMessage,
   } = useMessages({
@@ -40,7 +46,12 @@ export function MessagesPage() {
   return (
     <AppShell>
       <div className="flex flex-col gap-6">
-        <PageHeader breadcrumbs={['Broadcast', 'Mensagens']} />
+        <PageHeader
+          breadcrumbs={['Broadcast', 'Mensagens']}
+          search={search}
+          onSearchChange={handleSearchChange}
+          searchPlaceholder="Buscar pelo conteúdo da mensagem"
+        />
 
         <MessagesHeader
           status={statusFilter}
@@ -49,10 +60,14 @@ export function MessagesPage() {
         />
 
         <MessagesTable
+          hasNextPage={hasNextPage}
           loading={loading}
           messages={messages}
           onDelete={removeMessage}
           onEdit={messageDialog.handleEditDialogOpen}
+          onNextPage={handleNextPage}
+          onPreviousPage={handlePreviousPage}
+          page={page}
         />
       </div>
 

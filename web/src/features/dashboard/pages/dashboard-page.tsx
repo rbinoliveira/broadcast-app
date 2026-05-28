@@ -46,7 +46,7 @@ export function DashboardPage() {
         <PageHeader breadcrumbs={['Broadcast', 'Dashboard']} />
 
         <div>
-          <Typography component="h2" variant="h4">
+          <Typography component="h1" variant="h4">
             Dashboard
           </Typography>
         </div>
