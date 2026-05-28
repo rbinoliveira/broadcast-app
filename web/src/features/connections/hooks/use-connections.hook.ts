@@ -1,7 +1,7 @@
 import { enqueueSnackbar } from 'notistack'
 import { useCallback, useEffect, useState } from 'react'
 
-import { useAuth } from '@/features/auth/context/auth-context'
+import { useAuth } from '@/features/auth/hooks/use-auth.hook'
 
 import type { ConnectionFormValues } from '../schemas/connection.schema'
 import {

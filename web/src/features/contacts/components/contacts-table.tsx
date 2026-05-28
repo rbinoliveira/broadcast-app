@@ -3,12 +3,8 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded'
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded'
 import {
-  Box,
-  Button,
-  IconButton,
   LinearProgress,
   Paper,
-  Stack,
   Table,
   TableBody,
   TableCell,
@@ -18,6 +14,8 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+
+import { AppButton } from '@/shared/components/app-button'
 
 import type { ContactRow } from '../types/contact.type'
 
@@ -45,16 +43,12 @@ export function ContactsTable({
   const isEmpty = !loading && contacts.length === 0
 
   return (
-    <Stack spacing={2}>
-      <TableContainer
-        component={Paper}
-        variant="outlined"
-        sx={{ position: 'relative' }}
-      >
+    <div className="flex flex-col gap-4">
+      <TableContainer component={Paper} variant="outlined" className="relative">
         {loading ? (
           <LinearProgress
             aria-label="Carregando contatos"
-            sx={{ left: 0, position: 'absolute', right: 0, top: 0 }}
+            className="absolute top-0 right-0 left-0"
           />
         ) : null}
 
@@ -63,7 +57,7 @@ export function ContactsTable({
             <TableRow>
               <TableCell>Nome</TableCell>
               <TableCell>Telefone</TableCell>
-              <TableCell align="right" sx={{ width: 112 }}>
+              <TableCell align="right" className="w-28">
                 Ações
               </TableCell>
             </TableRow>
@@ -72,30 +66,32 @@ export function ContactsTable({
             {contacts.map((contact) => (
               <TableRow hover key={contact.id}>
                 <TableCell>
-                  <Typography sx={{ fontWeight: 600 }}>
+                  <Typography className="font-semibold">
                     {contact.name}
                   </Typography>
                 </TableCell>
                 <TableCell>{contact.phone}</TableCell>
                 <TableCell align="right">
                   <Tooltip title="Editar">
-                    <IconButton
+                    <AppButton
+                      iconOnly
                       aria-label={`Editar ${contact.name}`}
                       onClick={() => onEdit(contact)}
                       size="small"
                     >
                       <EditOutlinedIcon fontSize="small" />
-                    </IconButton>
+                    </AppButton>
                   </Tooltip>
                   <Tooltip title="Excluir">
-                    <IconButton
+                    <AppButton
+                      iconOnly
                       aria-label={`Excluir ${contact.name}`}
                       color="error"
                       onClick={() => onDelete(contact.id)}
                       size="small"
                     >
                       <DeleteOutlineOutlinedIcon fontSize="small" />
-                    </IconButton>
+                    </AppButton>
                   </Tooltip>
                 </TableCell>
               </TableRow>
@@ -104,39 +100,35 @@ export function ContactsTable({
         </Table>
 
         {isEmpty ? (
-          <Box sx={{ px: 2, py: 5, textAlign: 'center' }}>
+          <div className="px-4 py-10 text-center">
             <Typography color="text.secondary">
               Nenhum contato encontrado.
             </Typography>
-          </Box>
+          </div>
         ) : null}
       </TableContainer>
 
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{ alignItems: 'center', justifyContent: 'flex-end' }}
-      >
+      <div className="flex flex-row items-center justify-end gap-2">
         <Typography color="text.secondary" variant="body2">
           Página {page + 1}
         </Typography>
-        <Button
+        <AppButton
           disabled={loading || page === 0}
           onClick={onPreviousPage}
           startIcon={<NavigateBeforeRoundedIcon />}
           variant="outlined"
         >
           Anterior
-        </Button>
-        <Button
+        </AppButton>
+        <AppButton
           disabled={loading || !hasNextPage}
           endIcon={<NavigateNextRoundedIcon />}
           onClick={onNextPage}
           variant="outlined"
         >
           Próxima
-        </Button>
-      </Stack>
-    </Stack>
+        </AppButton>
+      </div>
+    </div>
   )
 }

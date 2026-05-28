@@ -1,18 +1,17 @@
-import { Stack } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 
-import { ConnectionFormDialog } from '@/features/connections/components/connection-form-dialog'
-import { ConnectionsHeader } from '@/features/connections/components/connections-header'
-import { ConnectionsList } from '@/features/connections/components/connections-list'
-import { useActiveConnection } from '@/features/connections/context/active-connection-context'
-import { useConnectionFormDialog } from '@/features/connections/hooks/use-connection-form-dialog.hook'
-import { useConnections } from '@/features/connections/hooks/use-connections.hook'
+import { AppShell } from '@/shared/components/app-shell'
 import { PageHeader } from '@/shared/components/page-header'
 import { useSearchFilter } from '@/shared/hooks/use-search-filter'
 
-import { AppShell } from '../components/app-shell'
+import { ConnectionFormDialog } from '../components/connection-form-dialog'
+import { ConnectionsHeader } from '../components/connections-header'
+import { ConnectionsList } from '../components/connections-list'
+import { useActiveConnection } from '../hooks/use-active-connection.hook'
+import { useConnectionFormDialog } from '../hooks/use-connection-form-dialog.hook'
+import { useConnections } from '../hooks/use-connections.hook'
 
-export function HomePage() {
+export function ConnectionsPage() {
   const navigate = useNavigate()
   const { setActiveConnectionId } = useActiveConnection()
   const {
@@ -38,7 +37,7 @@ export function HomePage() {
 
   return (
     <AppShell>
-      <Stack spacing={3}>
+      <div className="flex flex-col gap-6">
         <PageHeader
           breadcrumbs={['Broadcast', 'Conexões']}
           search={search}
@@ -56,7 +55,7 @@ export function HomePage() {
           onOpen={handleContactsOpen}
           onDelete={removeConnection}
         />
-      </Stack>
+      </div>
 
       <ConnectionFormDialog
         open={connectionDialog.open}

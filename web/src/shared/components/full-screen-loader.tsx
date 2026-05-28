@@ -1,15 +1,9 @@
-import { CircularProgress, Stack } from '@mui/material'
+import { CircularProgress } from '@mui/material'
 
 export function FullScreenLoader() {
   return (
-    <Stack
-      sx={{
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-      }}
-    >
+    <div className="flex min-h-screen flex-col items-center justify-center">
       <CircularProgress />
-    </Stack>
+    </div>
   )
 }

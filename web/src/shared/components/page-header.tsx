@@ -5,14 +5,13 @@ import {
   FormControl,
   InputAdornment,
   OutlinedInput,
-  Stack,
   Typography,
 } from '@mui/material'
 
 type PageHeaderProps = {
   breadcrumbs: string[]
-  search: string
-  onSearchChange: (value: string) => void
+  search?: string
+  onSearchChange?: (value: string) => void
   searchPlaceholder?: string
 }
 
@@ -23,11 +22,7 @@ export function PageHeader({
   searchPlaceholder = 'Buscar...',
 }: PageHeaderProps) {
   return (
-    <Stack
-      direction={{ xs: 'column', sm: 'row' }}
-      spacing={2}
-      sx={{ alignItems: { sm: 'center' }, justifyContent: 'space-between' }}
-    >
+    <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
       <Breadcrumbs
         aria-label="breadcrumb"
         separator={<NavigateNextRoundedIcon fontSize="small" />}
@@ -38,10 +33,11 @@ export function PageHeader({
           return (
             <Typography
               key={crumb}
-              sx={{
-                color: isLast ? 'text.primary' : 'text.secondary',
-                fontWeight: isLast ? 600 : 400,
-              }}
+              className={
+                isLast
+                  ? 'font-semibold text-foreground'
+                  : 'font-normal text-muted'
+              }
               variant="body1"
             >
               {crumb}
@@ -50,23 +46,22 @@ export function PageHeader({
         })}
       </Breadcrumbs>
 
-      <FormControl
-        sx={{ width: { xs: '100%', sm: '28ch' } }}
-        variant="outlined"
-      >
-        <OutlinedInput
-          inputProps={{ 'aria-label': 'buscar' }}
-          onChange={(event) => onSearchChange(event.target.value)}
-          placeholder={searchPlaceholder}
-          size="small"
-          startAdornment={
-            <InputAdornment position="start">
-              <SearchRoundedIcon fontSize="small" />
-            </InputAdornment>
-          }
-          value={search}
-        />
-      </FormControl>
-    </Stack>
+      {onSearchChange ? (
+        <FormControl className="w-full sm:w-[34ch]" variant="outlined">
+          <OutlinedInput
+            inputProps={{ 'aria-label': 'buscar' }}
+            onChange={(event) => onSearchChange(event.target.value)}
+            placeholder={searchPlaceholder}
+            size="small"
+            startAdornment={
+              <InputAdornment position="start">
+                <SearchRoundedIcon fontSize="small" />
+              </InputAdornment>
+            }
+            value={search}
+          />
+        </FormControl>
+      ) : null}
+    </div>
   )
 }

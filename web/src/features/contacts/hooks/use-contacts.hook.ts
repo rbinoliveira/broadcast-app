@@ -1,7 +1,7 @@
 import { enqueueSnackbar } from 'notistack'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { useAuth } from '@/features/auth/context/auth-context'
+import { useAuth } from '@/features/auth/hooks/use-auth.hook'
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
 
 import type { ContactFormValues } from '../schemas/contact.schema'

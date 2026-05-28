@@ -175,6 +175,14 @@ export const componentCustomizations: Components<Theme> = {
       input: {
         padding: 0,
       },
+      multiline: {
+        height: 'auto',
+        minHeight: 96,
+        padding: '10px 12px',
+        textarea: {
+          padding: 0,
+        },
+      },
       root: ({ theme }) => ({
         backgroundColor: (theme.vars || theme).palette.background.default,
         border: `1px solid ${(theme.vars || theme).palette.divider}`,
@@ -209,6 +217,9 @@ export const componentCustomizations: Components<Theme> = {
             },
             style: {
               height: '2.5rem',
+              [`&.${outlinedInputClasses.multiline}`]: {
+                height: 'auto',
+              },
             },
           },
         ],

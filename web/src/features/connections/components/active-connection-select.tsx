@@ -1,16 +1,16 @@
 import HubOutlinedIcon from '@mui/icons-material/HubOutlined'
 import {
-  Box,
   CircularProgress,
   FormControl,
   ListItemIcon,
   ListItemText,
   MenuItem,
-  Select,
   type SelectChangeEvent,
 } from '@mui/material'
 
-import { useActiveConnection } from '../context/active-connection-context'
+import { AppSelect } from '@/shared/components/app-select'
+
+import { useActiveConnection } from '../hooks/use-active-connection.hook'
 import { useConnections } from '../hooks/use-connections.hook'
 
 type ActiveConnectionSelectProps = {
@@ -36,7 +36,7 @@ export function ActiveConnectionSelect({
 
   return (
     <FormControl fullWidth size="small">
-      <Select
+      <AppSelect<string>
         aria-label="Selecionar conexão ativa"
         disabled={disabled}
         displayEmpty
@@ -44,16 +44,9 @@ export function ActiveConnectionSelect({
         renderValue={(value) => {
           if (!value && loading) {
             return (
-              <Box
-                component="span"
-                sx={{
-                  alignItems: 'center',
-                  display: 'inline-flex',
-                  height: 20,
-                }}
-              >
+              <span className="inline-flex h-5 items-center">
                 <CircularProgress color="inherit" size={14} />
-              </Box>
+              </span>
             )
           }
 
@@ -66,37 +59,17 @@ export function ActiveConnectionSelect({
             'Conexão'
           )
         }}
-        sx={{
-          cursor: disabled ? 'default' : 'pointer',
-          height: 40,
-          p: 0,
-          '& .MuiSelect-select': {
-            alignItems: 'center',
-            cursor: disabled ? 'default' : 'pointer',
-            display: 'flex',
-            minHeight: '40px',
-            px: 1.5,
-            py: 0,
-          },
-          '& .MuiSelect-icon': {
-            cursor: disabled ? 'default' : 'pointer',
-            pointerEvents: 'none',
-          },
-          '& input': {
-            cursor: disabled ? 'default' : 'pointer',
-          },
-        }}
         value={selectedConnectionId}
       >
         {connections.map((connection) => (
           <MenuItem key={connection.id} value={connection.id}>
-            <ListItemIcon sx={{ minWidth: 32 }}>
+            <ListItemIcon className="min-w-8">
               <HubOutlinedIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText primary={connection.name} />
           </MenuItem>
         ))}
-      </Select>
+      </AppSelect>
     </FormControl>
   )
 }

@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, CircularProgress, Stack } from '@mui/material'
 import { useForm } from 'react-hook-form'
 
+import { AppButton } from '@/shared/components/app-button'
 import { InputText } from '@/shared/components/input-text'
 
 import {
@@ -30,10 +30,9 @@ export function ForgotPasswordForm({ onSubmit }: ForgotPasswordFormProps) {
   }
 
   return (
-    <Stack
-      component="form"
+    <form
+      className="flex flex-col gap-4"
       noValidate
-      spacing={2}
       onSubmit={handleSubmit(handleRecoverPassword)}
     >
       <InputText
@@ -47,21 +46,14 @@ export function ForgotPasswordForm({ onSubmit }: ForgotPasswordFormProps) {
         type="email"
       />
 
-      <Button
-        disabled={isSubmitting}
+      <AppButton
+        isLoading={isSubmitting}
         fullWidth
         type="submit"
         variant="contained"
       >
-        {isSubmitting ? (
-          <>
-            <CircularProgress color="inherit" size={18} sx={{ mr: 1 }} />
-            Enviando...
-          </>
-        ) : (
-          'Enviar link de recuperacao'
-        )}
-      </Button>
-    </Stack>
+        Enviar link de recuperacao
+      </AppButton>
+    </form>
   )
 }

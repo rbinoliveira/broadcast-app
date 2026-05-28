@@ -1,5 +1,7 @@
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import { Box, Button, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
+
+import { AppButton } from '@/shared/components/app-button'
 
 type ContactsHeaderProps = {
   onNew: () => void
@@ -7,26 +9,18 @@ type ContactsHeaderProps = {
 
 export function ContactsHeader({ onNew }: ContactsHeaderProps) {
   return (
-    <Box
-      sx={{
-        alignItems: { xs: 'flex-start', sm: 'center' },
-        display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        gap: 2,
-        justifyContent: 'space-between',
-      }}
-    >
+    <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
       <Typography component="h2" variant="h4">
         Contatos
       </Typography>
 
-      <Button
+      <AppButton
         startIcon={<AddRoundedIcon />}
         variant="contained"
         onClick={onNew}
       >
         Novo contato
-      </Button>
-    </Box>
+      </AppButton>
+    </div>
   )
 }

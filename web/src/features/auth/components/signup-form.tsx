@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, CircularProgress, Divider, Stack } from '@mui/material'
+import { Divider } from '@mui/material'
 import { useForm } from 'react-hook-form'
 
+import { AppButton } from '@/shared/components/app-button'
 import { InputText } from '@/shared/components/input-text'
 
 import { type SignupFormValues, signupSchema } from '../schemas/signup.schema'
@@ -36,10 +37,9 @@ export function SignupForm({ onGoogleSignUp, onSubmit }: SignupFormProps) {
 
   return (
     <>
-      <Stack
-        component="form"
+      <form
+        className="flex flex-col gap-4"
         noValidate
-        spacing={2}
         onSubmit={handleSubmit(handleSignup)}
       >
         <InputText
@@ -73,33 +73,26 @@ export function SignupForm({ onGoogleSignUp, onSubmit }: SignupFormProps) {
           type="password"
         />
 
-        <Button
-          disabled={isSubmitting}
+        <AppButton
+          isLoading={isSubmitting}
           fullWidth
           type="submit"
           variant="contained"
         >
-          {isSubmitting ? (
-            <>
-              <CircularProgress color="inherit" size={18} sx={{ mr: 1 }} />
-              Cadastrando...
-            </>
-          ) : (
-            'Cadastrar'
-          )}
-        </Button>
-      </Stack>
+          Cadastrar
+        </AppButton>
+      </form>
 
       <Divider>ou</Divider>
 
-      <Button
+      <AppButton
         fullWidth
         onClick={handleGoogleSignUp}
         startIcon={<GoogleIcon />}
         variant="outlined"
       >
         Cadastrar com Google
-      </Button>
+      </AppButton>
     </>
   )
 }

@@ -1,19 +1,15 @@
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import {
-  Box,
-  Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   type DialogProps,
   DialogTitle,
-  IconButton,
-  Stack,
   Typography,
 } from '@mui/material'
-import { alpha } from '@mui/material/styles'
 import type { FormEventHandler, ReactNode } from 'react'
+
+import { AppButton } from '@/shared/components/app-button'
 
 type CrudFormDialogProps = {
   cancelLabel?: string
@@ -26,7 +22,6 @@ type CrudFormDialogProps = {
   onSubmit: FormEventHandler<HTMLFormElement>
   open: boolean
   submitLabel?: string
-  submittingLabel?: string
   title: string
 }
 
@@ -41,7 +36,6 @@ export function CrudFormDialog({
   onSubmit,
   open,
   submitLabel = 'Salvar',
-  submittingLabel = 'Salvando...',
   title,
 }: CrudFormDialogProps) {
   return (
@@ -52,70 +46,28 @@ export function CrudFormDialog({
       open={open}
       slotProps={{
         backdrop: {
-          sx: {
-            backdropFilter: 'blur(2px)',
-            backgroundColor: 'rgba(0, 0, 0, 0.68)',
-          },
+          className: 'bg-black/68 backdrop-blur-[2px]',
         },
         paper: {
-          sx: (theme) => ({
-            backgroundImage: 'none',
-            bgcolor: 'background.paper',
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 1.5,
-            boxShadow: (theme.vars || theme).palette.baseShadow,
-            overflow: 'hidden',
-            ...theme.applyStyles('dark', {
-              bgcolor: 'hsl(220, 28%, 8%)',
-              borderColor: alpha(theme.palette.common.white, 0.12),
-              boxShadow: '0 24px 80px rgba(0, 0, 0, 0.65)',
-            }),
-          }),
+          elevation: 0,
+          className:
+            'overflow-hidden rounded-xl border border-divider bg-surface shadow-card dark:border-white/12 dark:bg-surface-raised dark:shadow-overlay',
         },
       }}
     >
-      <Stack component="form" noValidate onSubmit={onSubmit}>
+      <form className="flex flex-col" noValidate onSubmit={onSubmit}>
         <DialogTitle
           component="div"
-          sx={{
-            alignItems: 'flex-start',
-            borderColor: 'primary.main',
-            borderTop: '3px solid',
-            display: 'flex',
-            gap: 2,
-            justifyContent: 'space-between',
-            p: 3,
-            pb: 2,
-          }}
+          className="flex items-start justify-between gap-4 border-t-[3px] border-brand p-6 pb-4"
         >
-          <Stack direction="row" spacing={1.5} sx={{ minWidth: 0 }}>
+          <div className="flex min-w-0 flex-row gap-3">
             {icon ? (
-              <Box
-                sx={(theme) => ({
-                  alignItems: 'center',
-                  bgcolor: alpha(theme.palette.primary.main, 0.1),
-                  border: '1px solid',
-                  borderColor: alpha(theme.palette.primary.main, 0.22),
-                  borderRadius: 1,
-                  color: 'primary.main',
-                  display: 'flex',
-                  flexShrink: 0,
-                  height: 38,
-                  justifyContent: 'center',
-                  mt: 0.25,
-                  width: 38,
-                  ...theme.applyStyles('dark', {
-                    bgcolor: alpha(theme.palette.primary.main, 0.14),
-                    borderColor: alpha(theme.palette.primary.main, 0.28),
-                  }),
-                })}
-              >
+              <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-lg border border-brand/25 bg-brand/10 text-brand dark:border-brand/30 dark:bg-brand/15">
                 {icon}
-              </Box>
+              </div>
             ) : null}
 
-            <Stack spacing={0.5} sx={{ minWidth: 0 }}>
+            <div className="flex min-w-0 flex-col gap-1">
               <Typography component="h2" variant="h6">
                 {title}
               </Typography>
@@ -124,53 +76,44 @@ export function CrudFormDialog({
                   {description}
                 </Typography>
               ) : null}
-            </Stack>
-          </Stack>
+            </div>
+          </div>
 
-          <IconButton
+          <AppButton
+            iconOnly
             aria-label="Fechar"
             disabled={isSubmitting}
             onClick={onClose}
             size="small"
-            sx={{ flexShrink: 0, mt: 0.25 }}
+            className="mt-0.5 shrink-0"
           >
             <CloseRoundedIcon fontSize="small" />
-          </IconButton>
+          </AppButton>
         </DialogTitle>
 
-        <DialogContent sx={{ px: 3, py: 2 }}>
-          <Stack spacing={2}>{children}</Stack>
+        <DialogContent className="px-6 py-4">
+          <div className="flex flex-col gap-4">{children}</div>
         </DialogContent>
 
-        <DialogActions
-          sx={{
-            borderColor: 'divider',
-            borderTop: '1px solid',
-            gap: 1,
-            px: 3,
-            py: 2,
-          }}
-        >
-          <Button disabled={isSubmitting} onClick={onClose} variant="outlined">
-            {cancelLabel}
-          </Button>
-          <Button
+        <DialogActions className="gap-2 border-t border-divider px-6 py-4">
+          <AppButton
             disabled={isSubmitting}
-            sx={{ minWidth: 120 }}
+            onClick={onClose}
+            className="min-w-30"
+            variant="outlined"
+          >
+            {cancelLabel}
+          </AppButton>
+          <AppButton
+            isLoading={isSubmitting}
+            className="min-w-30"
             type="submit"
             variant="contained"
           >
-            {isSubmitting ? (
-              <>
-                <CircularProgress color="inherit" size={18} sx={{ mr: 1 }} />
-                {submittingLabel}
-              </>
-            ) : (
-              submitLabel
-            )}
-          </Button>
+            {submitLabel}
+          </AppButton>
         </DialogActions>
-      </Stack>
+      </form>
     </Dialog>
   )
 }

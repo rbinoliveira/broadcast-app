@@ -2,7 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 
 import { FullScreenLoader } from '@/shared/components/full-screen-loader'
 
-import { useAuth } from '../context/auth-context'
+import { useAuth } from '../hooks/use-auth.hook'
 
 export function ProtectedRoute() {
   const { loading, user } = useAuth()

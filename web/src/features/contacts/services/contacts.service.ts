@@ -47,6 +47,10 @@ type SubscribeToContactsParams = {
   search: ContactSearch
 }
 
+function getTimestampMillis(timestamp: ContactRecord['updatedAt']) {
+  return timestamp?.toMillis() ?? 0
+}
+
 function getContactSearch(rawSearch: string): ContactSearch {
   const textTerm = normalizeTextSearch(rawSearch)
 
@@ -77,15 +81,86 @@ export function subscribeToContacts(
   }) => void,
   onError: (error: FirestoreError) => void,
 ): Unsubscribe {
-  const orderField = search?.field ?? 'normalizedName'
+  const handleSnapshot = (
+    docs: QueryDocumentSnapshot<DocumentData>[],
+    usesClientFilters = false,
+  ) => {
+    const preparedDocs = usesClientFilters
+      ? docs
+          .filter((item) => {
+            const data = item.data() as ContactRecord
+
+            if (!search) {
+              return true
+            }
+
+            return data[search.field]?.startsWith(search.term)
+          })
+          .sort((first, second) => {
+            const firstData = first.data() as ContactRecord
+            const secondData = second.data() as ContactRecord
+
+            if (search) {
+              return firstData[search.field].localeCompare(
+                secondData[search.field],
+              )
+            }
+
+            return (
+              getTimestampMillis(secondData.updatedAt) -
+              getTimestampMillis(firstData.updatedAt)
+            )
+          })
+      : docs
+
+    const cursorIndex = cursor
+      ? preparedDocs.findIndex((item) => item.id === cursor.id)
+      : -1
+    const startIndex = cursorIndex >= 0 ? cursorIndex + 1 : 0
+    const pageDocs = preparedDocs.slice(
+      startIndex,
+      startIndex + CONTACTS_PAGE_SIZE + 1,
+    )
+    const visibleDocs = pageDocs.slice(0, CONTACTS_PAGE_SIZE)
+    const lastVisibleDoc = visibleDocs.at(-1) ?? null
+
+    onData({
+      contacts: visibleDocs.map((item) => ({
+        id: item.id,
+        ...(item.data() as ContactRecord),
+      })),
+      hasNextPage: pageDocs.length > CONTACTS_PAGE_SIZE,
+      lastCursor: lastVisibleDoc,
+    })
+  }
+
+  const subscribeToFallbackQuery = () => {
+    const fallbackQuery = query(
+      collection(db, CONTACTS_COLLECTION),
+      where('ownerId', '==', ownerId),
+      where('connectionId', '==', connectionId),
+    )
+
+    return onSnapshot(
+      fallbackQuery,
+      (snapshot) => handleSnapshot(snapshot.docs, true),
+      onError,
+    )
+  }
+
   const constraints: QueryConstraint[] = [
     where('ownerId', '==', ownerId),
     where('connectionId', '==', connectionId),
-    orderBy(orderField),
   ]
 
   if (search) {
-    constraints.push(startAt(search.term), endAt(`${search.term}\uf8ff`))
+    constraints.push(
+      orderBy(search.field),
+      startAt(search.term),
+      endAt(`${search.term}\uf8ff`),
+    )
+  } else {
+    constraints.push(orderBy('updatedAt', 'desc'))
   }
 
   if (cursor) {
@@ -99,23 +174,96 @@ export function subscribeToContacts(
     ...constraints,
   )
 
-  return onSnapshot(
-    contactsQuery,
-    (snapshot) => {
-      const visibleDocs = snapshot.docs.slice(0, CONTACTS_PAGE_SIZE)
-      const lastVisibleDoc = visibleDocs.at(-1) ?? null
+  let fallbackUnsubscribe: Unsubscribe | null = null
 
-      onData({
-        contacts: visibleDocs.map((item) => ({
-          id: item.id,
-          ...(item.data() as ContactRecord),
-        })),
-        hasNextPage: snapshot.docs.length > CONTACTS_PAGE_SIZE,
-        lastCursor: lastVisibleDoc,
-      })
+  const unsubscribe = onSnapshot(
+    contactsQuery,
+    (snapshot) => handleSnapshot(snapshot.docs),
+    (error) => {
+      if (error.code === 'failed-precondition') {
+        fallbackUnsubscribe = subscribeToFallbackQuery()
+        return
+      }
+
+      onError(error)
     },
-    onError,
   )
+
+  return () => {
+    fallbackUnsubscribe?.()
+    unsubscribe()
+  }
+}
+
+export function subscribeToConnectionContacts(
+  ownerId: string,
+  connectionId: string,
+  onData: (contacts: ContactRow[]) => void,
+  onError: (error: FirestoreError) => void,
+): Unsubscribe {
+  const handleSnapshot = (
+    docs: QueryDocumentSnapshot<DocumentData>[],
+    usesClientSort = false,
+  ) => {
+    const preparedDocs = usesClientSort
+      ? docs.toSorted((first, second) => {
+          const firstData = first.data() as ContactRecord
+          const secondData = second.data() as ContactRecord
+
+          return firstData.normalizedName.localeCompare(
+            secondData.normalizedName,
+          )
+        })
+      : docs
+
+    onData(
+      preparedDocs.map((item) => ({
+        id: item.id,
+        ...(item.data() as ContactRecord),
+      })),
+    )
+  }
+
+  const subscribeToFallbackQuery = () => {
+    const fallbackQuery = query(
+      collection(db, CONTACTS_COLLECTION),
+      where('ownerId', '==', ownerId),
+      where('connectionId', '==', connectionId),
+    )
+
+    return onSnapshot(
+      fallbackQuery,
+      (snapshot) => handleSnapshot(snapshot.docs, true),
+      onError,
+    )
+  }
+
+  const contactsQuery = query(
+    collection(db, CONTACTS_COLLECTION),
+    where('ownerId', '==', ownerId),
+    where('connectionId', '==', connectionId),
+    orderBy('normalizedName'),
+  )
+
+  let fallbackUnsubscribe: Unsubscribe | null = null
+
+  const unsubscribe = onSnapshot(
+    contactsQuery,
+    (snapshot) => handleSnapshot(snapshot.docs),
+    (error) => {
+      if (error.code === 'failed-precondition') {
+        fallbackUnsubscribe = subscribeToFallbackQuery()
+        return
+      }
+
+      onError(error)
+    },
+  )
+
+  return () => {
+    fallbackUnsubscribe?.()
+    unsubscribe()
+  }
 }
 
 export async function createContact(

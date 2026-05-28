@@ -1,15 +1,12 @@
-import { Stack } from '@mui/material'
-
-import { useActiveConnection } from '@/features/connections/context/active-connection-context'
+import { useActiveConnection } from '@/features/connections/hooks/use-active-connection.hook'
 import { useConnections } from '@/features/connections/hooks/use-connections.hook'
 import { ContactFormDialog } from '@/features/contacts/components/contact-form-dialog'
 import { ContactsHeader } from '@/features/contacts/components/contacts-header'
 import { ContactsTable } from '@/features/contacts/components/contacts-table'
 import { useContactFormDialog } from '@/features/contacts/hooks/use-contact-form-dialog.hook'
 import { useContacts } from '@/features/contacts/hooks/use-contacts.hook'
+import { AppShell } from '@/shared/components/app-shell'
 import { PageHeader } from '@/shared/components/page-header'
-
-import { AppShell } from '../../home/components/app-shell'
 
 export function ContactsPage() {
   const { activeConnectionId } = useActiveConnection()
@@ -38,7 +35,7 @@ export function ContactsPage() {
 
   return (
     <AppShell>
-      <Stack spacing={3}>
+      <div className="flex flex-col gap-6">
         <PageHeader
           breadcrumbs={['Broadcast', 'Conexões', 'Contatos']}
           search={search}
@@ -58,7 +55,7 @@ export function ContactsPage() {
           onPreviousPage={handlePreviousPage}
           page={page}
         />
-      </Stack>
+      </div>
 
       <ContactFormDialog
         contact={contactDialog.contact}

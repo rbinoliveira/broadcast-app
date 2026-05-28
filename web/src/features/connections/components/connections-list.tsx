@@ -1,18 +1,8 @@
-import { Box, Skeleton } from '@mui/material'
+import { Skeleton } from '@mui/material'
 
 import type { ConnectionRow } from '../types/connection.type'
 import { AddConnectionCard } from './add-connection-card'
 import { ConnectionCard } from './connection-card'
-
-const GRID_SX = {
-  display: 'grid',
-  gap: 2,
-  gridTemplateColumns: {
-    xs: '1fr',
-    sm: 'repeat(2, 1fr)',
-    lg: 'repeat(3, 1fr)',
-  },
-} as const
 
 const SKELETON_KEYS = ['s1', 's2', 's3']
 
@@ -34,7 +24,7 @@ export function ConnectionsList({
   onOpen,
 }: ConnectionsListProps) {
   return (
-    <Box sx={GRID_SX}>
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <AddConnectionCard onClick={onNew} />
 
       {loading
@@ -50,6 +40,6 @@ export function ConnectionsList({
               onOpen={onOpen}
             />
           ))}
-    </Box>
+    </div>
   )
 }

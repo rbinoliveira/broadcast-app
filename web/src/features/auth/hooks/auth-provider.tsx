@@ -3,7 +3,7 @@ import { type ReactNode, useEffect, useState } from 'react'
 
 import { auth } from '@/shared/lib/firebase'
 
-import { AuthContext } from './auth-context'
+import { AuthContext } from './use-auth.hook'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)

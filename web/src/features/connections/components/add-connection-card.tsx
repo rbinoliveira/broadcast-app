@@ -1,5 +1,5 @@
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
-import { ButtonBase, Card, Stack, Typography } from '@mui/material'
+import { ButtonBase, Card, Typography } from '@mui/material'
 
 type AddConnectionCardProps = {
   onClick: () => void
@@ -9,26 +9,19 @@ export function AddConnectionCard({ onClick }: AddConnectionCardProps) {
   return (
     <Card
       variant="outlined"
-      sx={{ minHeight: 150, borderStyle: 'dashed', bgcolor: 'transparent' }}
+      className="min-h-[150px] border-dashed bg-transparent"
     >
       <ButtonBase
         aria-label="Nova conexão"
         onClick={onClick}
-        sx={{
-          width: '100%',
-          height: '100%',
-          minHeight: 150,
-          color: 'text.secondary',
-          transition: 'color 0.2s, background-color 0.2s',
-          '&:hover': { color: 'primary.main', bgcolor: 'action.hover' },
-        }}
+        className="h-full min-h-[150px] w-full text-muted transition-colors duration-200 hover:bg-hover hover:text-brand"
       >
-        <Stack spacing={1} sx={{ alignItems: 'center' }}>
+        <div className="flex flex-col items-center gap-2">
           <AddRoundedIcon />
-          <Typography sx={{ fontWeight: 600 }} variant="body2">
+          <Typography className="font-semibold" variant="body2">
             Nova conexão
           </Typography>
-        </Stack>
+        </div>
       </ButtonBase>
     </Card>
   )

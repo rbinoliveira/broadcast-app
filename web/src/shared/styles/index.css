@@ -1,4 +1,27 @@
-@import "tailwindcss";
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@custom-variant dark (&:is([data-mui-color-scheme="dark"], [data-mui-color-scheme="dark"] *));
+
+@theme {
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 900px;
+  --breakpoint-lg: 1200px;
+  --breakpoint-xl: 1536px;
+
+  --color-brand: var(--template-palette-primary-main);
+  --color-canvas: var(--template-palette-background-default);
+  --color-surface: var(--template-palette-background-paper);
+  --color-divider: var(--template-palette-divider);
+  --color-foreground: var(--template-palette-text-primary);
+  --color-muted: var(--template-palette-text-secondary);
+  --color-hover: var(--template-palette-action-hover);
+  --color-surface-raised: rgb(15 18 26);
+
+  --shadow-card: var(--template-palette-baseShadow);
+  --shadow-overlay: 0 24px 80px rgb(0 0 0 / 0.65);
+}
 
 html,
 body,
@@ -8,4 +31,40 @@ body,
 
 body {
   margin: 0;
+}
+
+@layer components {
+  .auth-backdrop::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: block;
+    background-repeat: no-repeat;
+    background-image: radial-gradient(
+      ellipse at 50% 50%,
+      rgb(240 247 255),
+      rgb(255 255 255)
+    );
+  }
+
+  [data-mui-color-scheme="dark"] .auth-backdrop::before {
+    background-image: radial-gradient(
+      at 50% 50%,
+      rgb(0 41 82 / 0.5),
+      rgb(9 11 17)
+    );
+  }
+
+  .auth-card {
+    box-shadow:
+      rgb(9 11 17 / 0.05) 0px 5px 15px 0px,
+      rgb(19 23 32 / 0.05) 0px 15px 35px -5px;
+  }
+
+  [data-mui-color-scheme="dark"] .auth-card {
+    box-shadow:
+      rgb(9 11 17 / 0.5) 0px 5px 15px 0px,
+      rgb(19 23 32 / 0.08) 0px 15px 35px -5px;
+  }
 }

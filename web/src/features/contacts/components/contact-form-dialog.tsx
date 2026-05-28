@@ -6,13 +6,13 @@ import { useForm } from 'react-hook-form'
 import { CrudFormDialog } from '@/shared/components/crud-form-dialog'
 import { InputMaskedText } from '@/shared/components/input-masked-text'
 import { InputText } from '@/shared/components/input-text'
+import { maskPhone } from '@/shared/utils/phone-mask'
 
 import {
   type ContactFormValues,
   contactSchema,
 } from '../schemas/contact.schema'
 import type { ContactRow } from '../types/contact.type'
-import { maskPhone } from '../utils/phone-mask'
 
 type ContactFormDialogProps = {
   contact: ContactRow | null

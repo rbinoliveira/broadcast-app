@@ -1,6 +1,6 @@
 import { type ReactNode, useMemo, useState } from 'react'
 
-import { ActiveConnectionContext } from './active-connection-context'
+import { ActiveConnectionContext } from './use-active-connection.hook'
 
 const ACTIVE_CONNECTION_STORAGE_KEY = 'broadcast.activeConnectionId'
 

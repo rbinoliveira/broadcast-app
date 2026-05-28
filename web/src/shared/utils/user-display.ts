@@ -1,8 +1,5 @@
-export function getDisplayName(
-  name: string | null | undefined,
-  email: string | null | undefined,
-) {
-  return name?.trim() || email?.split('@')[0] || 'Usuario'
+export function getDisplayName(name: string | null | undefined) {
+  return name?.trim() || 'Usuario'
 }
 
 export function getInitials(value: string) {

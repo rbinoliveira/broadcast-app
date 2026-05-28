@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, CircularProgress, Divider, Link, Stack } from '@mui/material'
+import { Divider, Link } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import { Link as RouterLink } from 'react-router-dom'
 
+import { AppButton } from '@/shared/components/app-button'
 import { InputText } from '@/shared/components/input-text'
 
 import { type LoginFormValues, loginSchema } from '../schemas/login.schema'
@@ -36,10 +37,9 @@ export function LoginForm({ onGoogleSignIn, onSubmit }: LoginFormProps) {
 
   return (
     <>
-      <Stack
-        component="form"
+      <form
+        className="flex flex-col gap-4"
         noValidate
-        spacing={2}
         onSubmit={handleSubmit(handleLogin)}
       >
         <InputText
@@ -63,42 +63,35 @@ export function LoginForm({ onGoogleSignIn, onSubmit }: LoginFormProps) {
           type="password"
         />
 
-        <Button
-          disabled={isSubmitting}
+        <AppButton
+          isLoading={isSubmitting}
           fullWidth
           type="submit"
           variant="contained"
         >
-          {isSubmitting ? (
-            <>
-              <CircularProgress color="inherit" size={18} sx={{ mr: 1 }} />
-              Entrando...
-            </>
-          ) : (
-            'Entrar'
-          )}
-        </Button>
+          Entrar
+        </AppButton>
 
         <Link
           component={RouterLink}
-          sx={{ alignSelf: 'center' }}
+          className="self-center"
           to="/forgot-password"
           variant="body2"
         >
           Esqueceu sua senha?
         </Link>
-      </Stack>
+      </form>
 
       <Divider>ou</Divider>
 
-      <Button
+      <AppButton
         fullWidth
         onClick={handleGoogleSignIn}
         startIcon={<GoogleIcon />}
         variant="outlined"
       >
         Entrar com Google
-      </Button>
+      </AppButton>
     </>
   )
 }
